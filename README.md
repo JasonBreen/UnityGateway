@@ -23,7 +23,7 @@ cloud services.
    - **Session Timeline** assets assemble the ordered list of focus levels that the session will play through.
 4. Add the `GatewayStateMachine` component to a scene GameObject that contains an `AudioSource` with the Gateway session audio clip.
 5. Assign a `GatewayVisualController` to the state machine and populate its target materials list with the materials you want to drive.
-6. (Optional) Add the `BreathingModelController` to the scene and assign a Sentis `ModelAsset`.  Feed preprocessed microphone data into the controller to modulate the visuals in real time.  Unity 6 ships with Sentis 2.x, which this project is configured for.
+6. (Optional) Add the `BreathingModelController` to the scene and assign a Sentis `ModelAsset`.  Feed preprocessed microphone data into the controller—or enable its automatic AudioSource capture—to modulate the visuals in real time.  Unity 6 ships with Sentis 2.x, which this project is configured for.
 
 ## Local AI workflow
 

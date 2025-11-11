@@ -24,11 +24,35 @@ namespace Gateway.AI
         [Tooltip("Event invoked whenever the normalized breath metric updates.")]
         private UnityEngine.Events.UnityEvent<float> onBreathMetric = new UnityEngine.Events.UnityEvent<float>();
 
+        [SerializeField]
+        [Min(32)]
+        [Tooltip("Number of audio samples processed per model evaluation.")]
+        private int sampleWindow = 1024;
+
+        [SerializeField]
+        [Tooltip("Automatically capture audio from the attached AudioSource for inference input.")]
+        private bool autoCaptureAudioSource = true;
+
+        [SerializeField]
+        [Tooltip("Normalize the input window by its peak amplitude before inference.")]
+        private bool normalizeInput = true;
+
         private Model runtimeModel = null;
         private IWorker worker = null;
         private TensorFloat inputTensor = null;
+        private float[] reusableWindow = null;
         private float smoothedValue;
         private readonly Queue<float> sampleBuffer = new Queue<float>();
+
+        public UnityEngine.Events.UnityEvent<float> OnBreathMetric => onBreathMetric;
+
+        private void Awake()
+        {
+            if (sampleWindow < 32)
+            {
+                sampleWindow = 32;
+            }
+        }
 
         private void Start()
         {
@@ -109,14 +133,23 @@ namespace Gateway.AI
 
         private bool TryDequeueSamples(out float[] samples)
         {
-            if (sampleBuffer.Count == 0)
+            if (sampleBuffer.Count < sampleWindow)
             {
                 samples = Array.Empty<float>();
                 return false;
             }
 
-            samples = sampleBuffer.ToArray();
-            sampleBuffer.Clear();
+            if (reusableWindow == null || reusableWindow.Length != sampleWindow)
+            {
+                reusableWindow = new float[sampleWindow];
+            }
+
+            for (var i = 0; i < sampleWindow; i++)
+            {
+                reusableWindow[i] = sampleBuffer.Dequeue();
+            }
+
+            samples = reusableWindow;
             return true;
         }
 
@@ -130,9 +163,28 @@ namespace Gateway.AI
             var shape = new TensorShape(1, samples.Count);
             inputTensor = new TensorFloat(shape);
 
+            float normalizationFactor = 1f;
+            if (normalizeInput)
+            {
+                float maxMagnitude = 0f;
+                for (var i = 0; i < samples.Count; i++)
+                {
+                    var magnitude = Mathf.Abs(samples[i]);
+                    if (magnitude > maxMagnitude)
+                    {
+                        maxMagnitude = magnitude;
+                    }
+                }
+
+                if (maxMagnitude > 0.0001f)
+                {
+                    normalizationFactor = 1f / maxMagnitude;
+                }
+            }
+
             for (var i = 0; i < samples.Count; i++)
             {
-                inputTensor[i] = samples[i];
+                inputTensor[i] = samples[i] * normalizationFactor;
             }
         }
 
@@ -144,6 +196,34 @@ namespace Gateway.AI
             foreach (var sample in samples)
             {
                 sampleBuffer.Enqueue(sample);
+                if (sampleBuffer.Count > sampleWindow * 4)
+                {
+                    sampleBuffer.Dequeue();
+                }
+            }
+        }
+
+        private void OnAudioFilterRead(float[] data, int channels)
+        {
+            if (!autoCaptureAudioSource || data == null || channels <= 0)
+            {
+                return;
+            }
+
+            for (var index = 0; index < data.Length; index += channels)
+            {
+                float sum = 0f;
+                for (var channel = 0; channel < channels; channel++)
+                {
+                    sum += data[index + channel];
+                }
+
+                var monoSample = sum / channels;
+                sampleBuffer.Enqueue(monoSample);
+                if (sampleBuffer.Count > sampleWindow * 4)
+                {
+                    sampleBuffer.Dequeue();
+                }
             }
         }
     }
