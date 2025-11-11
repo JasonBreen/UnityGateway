@@ -14,7 +14,7 @@ namespace Gateway.AI
     {
         [SerializeField]
         [Tooltip("ONNX model asset referenced by Sentis (placed in a Resources folder or assigned in inspector).")]
-        private ModelAsset modelAsset = default!;
+        private ModelAsset modelAsset = null;
 
         [SerializeField]
         [Tooltip("Smoothing factor applied to the raw model output.")]
@@ -22,12 +22,13 @@ namespace Gateway.AI
 
         [SerializeField]
         [Tooltip("Event invoked whenever the normalized breath metric updates.")]
-        private UnityEngine.Events.UnityEvent<float> onBreathMetric = new();
+        private UnityEngine.Events.UnityEvent<float> onBreathMetric = new UnityEngine.Events.UnityEvent<float>();
 
-        private IWorker? worker;
-        private TensorFloat? inputTensor;
+        private Model runtimeModel = null;
+        private IWorker worker = null;
+        private TensorFloat inputTensor = null;
         private float smoothedValue;
-        private readonly Queue<float> sampleBuffer = new();
+        private readonly Queue<float> sampleBuffer = new Queue<float>();
 
         private void Start()
         {
@@ -38,15 +39,43 @@ namespace Gateway.AI
                 return;
             }
 
-            worker = WorkerFactory.CreateWorker(WorkerFactory.Type.Auto, modelAsset);
+            runtimeModel = ModelLoader.Load(modelAsset);
+
+            try
+            {
+                worker = WorkerFactory.CreateWorker(BackendType.GPUCompute, runtimeModel);
+            }
+            catch (InvalidOperationException)
+            {
+                worker = WorkerFactory.CreateWorker(BackendType.CPU, runtimeModel);
+            }
+            catch (ArgumentException)
+            {
+                worker = WorkerFactory.CreateWorker(BackendType.CPU, runtimeModel);
+            }
         }
 
         private void OnDestroy()
         {
-            worker?.Dispose();
-            worker = null;
-            inputTensor?.Dispose();
-            inputTensor = null;
+            if (worker != null)
+            {
+                worker.Dispose();
+                worker = null;
+            }
+
+            if (runtimeModel != null)
+            {
+#if UNITY_SENTIS_2_0_OR_NEWER
+                runtimeModel.Dispose();
+#endif
+                runtimeModel = null;
+            }
+
+            if (inputTensor != null)
+            {
+                inputTensor.Dispose();
+                inputTensor = null;
+            }
         }
 
         private void Update()
@@ -66,7 +95,7 @@ namespace Gateway.AI
             PrepareInput(samples);
             worker.Execute(inputTensor);
 
-            var output = worker.PeekOutput() as TensorFloat;
+            TensorFloat output = worker.PeekOutput() as TensorFloat;
             if (output == null || output.shape.length == 0)
             {
                 return;
@@ -93,7 +122,10 @@ namespace Gateway.AI
 
         private void PrepareInput(IReadOnlyList<float> samples)
         {
-            inputTensor?.Dispose();
+            if (inputTensor != null)
+            {
+                inputTensor.Dispose();
+            }
 
             var shape = new TensorShape(1, samples.Count);
             inputTensor = new TensorFloat(shape);

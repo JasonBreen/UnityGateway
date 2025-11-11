@@ -19,11 +19,11 @@ namespace Gateway.Visuals
 
         [SerializeField]
         [Tooltip("Material parameters that will be applied when this state activates.")]
-        private List<MaterialParameter> materialParameters = new();
+        private List<MaterialParameter> materialParameters = new List<MaterialParameter>();
 
         [SerializeField]
         [Tooltip("Optional animation curves that can be driven over time or by AI signals.")]
-        private List<AnimationParameter> animationParameters = new();
+        private List<AnimationParameter> animationParameters = new List<AnimationParameter>();
 
         public string DisplayName => displayName;
         public IReadOnlyList<MaterialParameter> MaterialParameters => materialParameters;

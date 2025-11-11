@@ -10,10 +10,10 @@ namespace Gateway.Visuals
     public sealed class GatewayStateMachine : MonoBehaviour
     {
         [SerializeField]
-        private GatewaySessionTimeline sessionTimeline = default!;
+        private GatewaySessionTimeline sessionTimeline = null;
 
         [SerializeField]
-        private GatewayVisualController visualController = default!;
+        private GatewayVisualController visualController = null;
 
         [SerializeField]
         [Tooltip("Automatically start the timeline when the component is enabled.")]
@@ -21,9 +21,9 @@ namespace Gateway.Visuals
 
         [SerializeField]
         [Tooltip("Optional override for the AudioSource used to play the Gateway session.")]
-        private AudioSource audioSourceOverride = null!;
+        private AudioSource audioSourceOverride = null;
 
-        private Coroutine? activeRoutine;
+        private Coroutine activeRoutine;
 
         private AudioSource AudioSource => audioSourceOverride != null ? audioSourceOverride : GetComponent<AudioSource>();
 

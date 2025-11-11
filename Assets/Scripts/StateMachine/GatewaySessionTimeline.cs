@@ -15,7 +15,7 @@ namespace Gateway.Visuals
     public sealed class GatewaySessionTimeline : ScriptableObject
     {
         [SerializeField]
-        private List<TimelineSegment> segments = new();
+        private List<TimelineSegment> segments = new List<TimelineSegment>();
 
         public IReadOnlyList<TimelineSegment> Segments => segments;
     }
@@ -24,7 +24,7 @@ namespace Gateway.Visuals
     public sealed class TimelineSegment
     {
         [SerializeField]
-        private GatewayVisualState visualState = default!;
+        private GatewayVisualState visualState = null;
 
         [SerializeField]
         [Tooltip("Duration of this focus level segment in seconds.")]

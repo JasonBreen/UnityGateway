@@ -9,14 +9,14 @@ namespace Gateway.Visuals
     public sealed class GatewayVisualController : MonoBehaviour
     {
         [SerializeField]
-        private List<Material> targetMaterials = new();
+        private List<Material> targetMaterials = new List<Material>();
 
         [SerializeField]
         [Tooltip("Optional mapping from animation parameter keys to material property names.")]
-        private List<AnimationBinding> animationBindings = new();
+        private List<AnimationBinding> animationBindings = new List<AnimationBinding>();
 
-        private readonly Dictionary<string, AnimationBinding> bindingLookup = new();
-        private GatewayVisualState? activeState;
+        private readonly Dictionary<string, AnimationBinding> bindingLookup = new Dictionary<string, AnimationBinding>();
+        private GatewayVisualState activeState;
 
         private void Awake()
         {
