@@ -1,0 +1,51 @@
+{
+  "results": [
+    {
+      "status": "error",
+      "error": "Network error while querying OSV: Tunnel connection failed: 403 Forbidden",
+      "payload": {
+        "package": {
+          "name": "Newtonsoft.Json",
+          "ecosystem": "NuGet"
+        },
+        "package_version": "3.2.1"
+      },
+      "unity_package": "com.unity.nuget.newtonsoft-json",
+      "unity_version": "3.2.1"
+    }
+  ],
+  "unsupported": [
+    "com.unity.modules.ai",
+    "com.unity.modules.animation",
+    "com.unity.modules.assetbundle",
+    "com.unity.modules.audio",
+    "com.unity.modules.cloth",
+    "com.unity.modules.director",
+    "com.unity.modules.imageconversion",
+    "com.unity.modules.imgui",
+    "com.unity.modules.jsonserialize",
+    "com.unity.modules.particlesystem",
+    "com.unity.modules.physics",
+    "com.unity.modules.physics2d",
+    "com.unity.modules.screencapture",
+    "com.unity.modules.terrain",
+    "com.unity.modules.terrainphysics",
+    "com.unity.modules.tilemap",
+    "com.unity.modules.ui",
+    "com.unity.modules.uielements",
+    "com.unity.modules.unityanalytics",
+    "com.unity.modules.unitywebrequest",
+    "com.unity.modules.unitywebrequestassetbundle",
+    "com.unity.modules.unitywebrequestaudio",
+    "com.unity.modules.unitywebrequesttexture",
+    "com.unity.modules.unitywebrequestwww",
+    "com.unity.modules.vehicles",
+    "com.unity.modules.video",
+    "com.unity.modules.vr",
+    "com.unity.modules.wind",
+    "com.unity.modules.xr",
+    "com.unity.sentis",
+    "com.unity.timeline",
+    "com.unity.visualeffectgraph"
+  ]
+}
