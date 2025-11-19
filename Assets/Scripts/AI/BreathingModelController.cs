@@ -63,11 +63,20 @@ namespace Gateway.AI
                 return;
             }
 
-            runtimeModel = ModelLoader.Load(modelAsset);
+            try
+            {
+                runtimeModel = ModelLoader.Load(modelAsset);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to load Sentis model asset: {ex.Message}");
+                enabled = false;
+                return;
+            }
 
             try
             {
-                worker = WorkerFactory.CreateWorker(BackendType.GPUCompute, runtimeModel);
+                worker = WorkerFactory.CreateWorker(WorkerFactory.Type.Auto, runtimeModel);
             }
             catch (InvalidOperationException)
             {
