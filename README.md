@@ -14,6 +14,7 @@ cloud services.
   - `Art/Materials/Poolrooms/` – URP Lit materials for the pool tile, wall segments, and translucent water plane.
   - `Art/VisualStates/` – Example `GatewayVisualState` and `GatewaySessionTimeline` assets that pair with the Poolrooms environment.
 - `Packages/manifest.json` – Package manifest pinned to Unity Sentis 2.x and core Unity 6 modules.
+- `Gateway.sln` and `DotNet/` – Lightweight .NET 8 solution used by CI to sanity-check the Unity project footprint.
 - `gateway_visual_experience_project_plan.md` – Detailed product and technical design reference.
 - `instructions_for_codex.md` – High-level guidelines for contributors and AI assistants.
 
