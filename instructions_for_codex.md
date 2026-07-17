@@ -1,6 +1,6 @@
 # Instructions for Codex
 
-This repository contains a base Unity 6 project for building a Gateway Visual Experience powered by local AI models.  Please read and follow these guidelines when working with the project files.
+This repository contains a Unity 6.5 project pinned to editor 6000.5.4f1 for building a Gateway Visual Experience powered by local AI models. Please read and follow these guidelines when working with the project files.
 
 ## Folder Structure
 
@@ -10,7 +10,7 @@ This repository contains a base Unity 6 project for building a Gateway Visual Ex
 
 ## AI & Sentis / Inference Engine
 
-The Gateway Visual Experience relies on local AI to adapt visuals in real time.  Use Unity’s Inference Engine package (`com.unity.ai.inference`, formerly Sentis) rather than cloud‑hosted APIs.  This package lets you import trained ONNX models and run them on the user’s device CPU/GPU【2153439978472†L74-L85】.  Your Unity scene scripts should call the inference API to compute shader parameters or other state variables instead of generating full images.
+The Gateway Visual Experience relies on local AI to adapt visuals in real time. Use Unity’s Inference Engine package (`com.unity.ai.inference` 2.4.1, formerly Sentis) rather than cloud-hosted APIs. This package lets you import trained ONNX models and run them on the user’s device CPU/GPU【2153439978472†L74-L85】. Unity scene scripts should use the `Unity.InferenceEngine` API to compute shader parameters or other state variables instead of generating full images.
 
 ## Project Plan
 

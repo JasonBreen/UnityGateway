@@ -1,20 +1,22 @@
 {
   "results": [
     {
-      "status": "error",
-      "error": "Network error while querying OSV: Tunnel connection failed: 403 Forbidden",
+      "status": "ok",
       "payload": {
         "package": {
           "name": "Newtonsoft.Json",
           "ecosystem": "NuGet"
         },
-        "package_version": "3.2.1"
+        "version": "13.0.2",
+        "unity_package_version": "3.2.1"
       },
+      "vulnerabilities": [],
       "unity_package": "com.unity.nuget.newtonsoft-json",
       "unity_version": "3.2.1"
     }
   ],
   "unsupported": [
+    "com.unity.ai.inference",
     "com.unity.modules.ai",
     "com.unity.modules.animation",
     "com.unity.modules.assetbundle",
@@ -44,7 +46,6 @@
     "com.unity.modules.vr",
     "com.unity.modules.wind",
     "com.unity.modules.xr",
-    "com.unity.sentis",
     "com.unity.timeline",
     "com.unity.visualeffectgraph"
   ]

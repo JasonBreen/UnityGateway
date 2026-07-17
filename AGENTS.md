@@ -1,15 +1,15 @@
 # AGENTS.md
 
 ## Project Overview
-This repository contains a base Unity 6 project for building a Gateway Visual Experience powered by local AI models. It aims to transform the Gateway tape audio cues into dynamic, responsive visuals. The project uses Unity 6's Inference Engine (formerly Sentis) to run ONNX models locally on the user's CPU/GPU, ensuring offline operation.
+This repository contains a Unity 6.5 project for building a Gateway Visual Experience powered by local AI models. It aims to transform the Gateway tape audio cues into dynamic, responsive visuals. The project is pinned to Unity 6000.5.4f1 and uses Inference Engine 2.4.1 (formerly Sentis) to run ONNX models locally on the user's CPU/GPU, ensuring offline operation.
 
 ## Setup commands
-- Install Unity 6 with the required modules (e.g., standalone build support).
+- Install Unity 6000.5.4f1 with the required modules (e.g., standalone build support).
 - Open the project using Unity Hub or from the command line:
   ```bash
   unity -projectPath .
   ```
-- Ensure dependencies in `Packages/manifest.json` are installed. The project includes the `com.unity.ai.inference` package.
+- Ensure dependencies in `Packages/manifest.json` are installed. The project includes `com.unity.ai.inference` 2.4.1.
 
 ## Build and Run
 - Use Unity's Build Settings to create a standalone build for your target platform (Windows, macOS or Linux).
