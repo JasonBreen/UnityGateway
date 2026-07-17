@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gateway Validate"
+  short_description: "Verify UnityGateway changes and guardrails"
+  default_prompt: "Use $gateway-validate to verify the current UnityGateway changes."

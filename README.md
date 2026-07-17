@@ -17,6 +17,20 @@ cloud services.
 - `Gateway.sln` and `DotNet/` – Lightweight .NET 8 solution used by CI to sanity-check the Unity project footprint.
 - `gateway_visual_experience_project_plan.md` – Detailed product and technical design reference.
 - `instructions_for_codex.md` – High-level guidelines for contributors and AI assistants.
+- `.codex/agents/` – Project-scoped Codex specialists for Unity features, local inference, procedural visuals, and review.
+- `.agents/skills/` – Reusable UnityGateway implementation and validation workflows shared by Codex agents.
+
+## Codex workflows
+
+Codex discovers the project agents and skills automatically when it runs inside this repository. Delegate focused work to `unity-feature-engineer`, `local-inference-engineer`, `procedural-visual-designer`, or `gateway-reviewer`. The corresponding skills can also be invoked directly as `$gateway-unity-feature`, `$gateway-local-inference`, `$gateway-procedural-visuals`, and `$gateway-validate`.
+
+Run the repository-level validation workflow from PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .agents\skills\gateway-validate\scripts\validate.ps1
+```
+
+The baseline performs structural and offline-runtime checks, runs the .NET tests, and uses Unity batch mode when a `Unity` executable is available. Pass `-UnityPath` and `-RequireUnity` when Editor compilation must be mandatory.
 
 ## Getting started
 

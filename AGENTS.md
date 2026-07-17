@@ -25,6 +25,13 @@ This repository contains a base Unity 6 project for building a Gateway Visual E
 ## Testing Instructions
 - Use Unity's Test Framework for automated tests under a `Tests/` folder. Write edit-mode and play-mode tests where appropriate.
 - For visual components, manually test by running the scene and verifying that AI-driven visuals respond to audio cues and input.
+- Run `.agents/skills/gateway-validate/scripts/validate.ps1` for baseline repository, offline-runtime, and .NET checks. Use `-UnityPath <path> -RequireUnity` when Unity Editor compilation is required.
+
+## Project Agents and Skills
+- Project-scoped Codex agents live in `.codex/agents/`: `unity-feature-engineer`, `local-inference-engineer`, `procedural-visual-designer`, and `gateway-reviewer`.
+- Repo-scoped skills live in `.agents/skills/`: `$gateway-unity-feature`, `$gateway-local-inference`, `$gateway-procedural-visuals`, and `$gateway-validate`.
+- Delegate only focused, independent subtasks. Keep final integration, validation, and scope control with the primary agent.
+- Review agents default to read-only inspection unless the user explicitly requests fixes.
 
 ## AI & Inference
 - All AI inference must run locally using the Inference Engine package (`com.unity.ai.inference`). Do not call external cloud services for generative content.

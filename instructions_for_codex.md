@@ -23,4 +23,11 @@ The file `gateway_visual_experience_project_plan.md` in the repository root cont
 - **Maintain clear organization:** As the project grows, maintain an organized folder hierarchy.  Keep scripts modular, group related assets, and avoid clutter.
 - **Document changes:** When adding new assets or scripts, include comments and readme files explaining their purpose and how to use them.
 
+## Project Agents and Skills
+
+- Use the project-scoped agents in `.codex/agents/` when a task benefits from a focused Unity feature, local inference, procedural visual, or review role.
+- Use the repo skills in `.agents/skills/` for repeatable work. In particular, run `$gateway-validate` after implementation and report when Unity Editor checks could not run.
+- Keep delegation bounded to independent work. The primary task remains responsible for integrating results, checking the final diff, and preserving unrelated changes.
+- Do not duplicate durable repository rules inside task prompts; keep shared rules in `AGENTS.md` and reusable procedures in skills.
+
 By following these instructions, you can help ensure that the Codex (or any other code assistant) understands the intent of the project and maintains compatibility with the overall design philosophy.
