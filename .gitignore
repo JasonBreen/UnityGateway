@@ -1,0 +1,12 @@
+# Unity-generated directories
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# IDE and .NET-generated directories
+.vs/
+[Bb]in/

@@ -75,8 +75,8 @@ Ensure that each visual state is parameterized by a set of floats (e.g., `pulseR
 1. **Train or obtain a breathing detection model**: Use an existing open‑source model or train a small CNN on breathing and non‑breathing sounds.  Convert the trained model to ONNX.
 2. **Load the model in Unity**: 
    - Use `ModelLoader.Load(path)` from the Sentis API to load the ONNX file.
-   - Create an `IWorker` instance to run inference.
-   - In `Update()`, capture audio from the microphone, process it into the input format expected by the model (e.g., compute a Mel spectrogram) and feed it to the model.
+   - Create a `Worker` instance from the `Unity.InferenceEngine` namespace to run inference.
+   - In `Update()`, capture audio from the microphone, process it into the input format expected by the model (e.g., compute a Mel spectrogram) and schedule it with the worker.
    - Retrieve the output (e.g., breath rate) and scale it to the desired parameter range.
 3. **Apply the parameters to shaders**: Expose shader properties (via `Material.SetFloat`) and drive them with the model outputs.  For example, map breathing rate to the amplitude of noise displacement, or map relaxation probability to the camera’s depth of field.
 

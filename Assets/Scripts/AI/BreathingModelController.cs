@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Unity.Sentis;
+using Unity.InferenceEngine;
 using UnityEngine;
 
 namespace Gateway.AI
@@ -13,7 +13,7 @@ namespace Gateway.AI
     public sealed class BreathingModelController : MonoBehaviour
     {
         [SerializeField]
-        [Tooltip("ONNX model asset referenced by Sentis (placed in a Resources folder or assigned in inspector).")]
+        [Tooltip("ONNX model asset referenced by Inference Engine (placed in a Resources folder or assigned in inspector).")]
         private ModelAsset modelAsset = null;
 
         [SerializeField]
@@ -38,8 +38,8 @@ namespace Gateway.AI
         private bool normalizeInput = true;
 
         private Model runtimeModel = null;
-        private IWorker worker = null;
-        private TensorFloat inputTensor = null;
+        private Worker worker = null;
+        private Tensor<float> inputTensor = null;
         private float[] reusableWindow = null;
         private float smoothedValue;
         private readonly Queue<float> sampleBuffer = new Queue<float>();
@@ -67,15 +67,15 @@ namespace Gateway.AI
 
             try
             {
-                worker = WorkerFactory.CreateWorker(BackendType.GPUCompute, runtimeModel);
+                worker = new Worker(runtimeModel, BackendType.GPUCompute);
             }
             catch (InvalidOperationException)
             {
-                worker = WorkerFactory.CreateWorker(BackendType.CPU, runtimeModel);
+                worker = new Worker(runtimeModel, BackendType.CPU);
             }
             catch (ArgumentException)
             {
-                worker = WorkerFactory.CreateWorker(BackendType.CPU, runtimeModel);
+                worker = new Worker(runtimeModel, BackendType.CPU);
             }
         }
 
@@ -87,13 +87,7 @@ namespace Gateway.AI
                 worker = null;
             }
 
-            if (runtimeModel != null)
-            {
-#if UNITY_SENTIS_2_0_OR_NEWER
-                runtimeModel.Dispose();
-#endif
-                runtimeModel = null;
-            }
+            runtimeModel = null;
 
             if (inputTensor != null)
             {
@@ -117,18 +111,18 @@ namespace Gateway.AI
             }
 
             PrepareInput(samples);
-            worker.Execute(inputTensor);
+            worker.Schedule(inputTensor);
 
-            TensorFloat output = worker.PeekOutput() as TensorFloat;
-            if (output == null || output.shape.length == 0)
+            Tensor<float> output = worker.PeekOutput() as Tensor<float>;
+            if (output == null || output.count == 0)
             {
                 return;
             }
 
-            var value = Mathf.Clamp01(output[0]);
+            using Tensor<float> readableOutput = output.ReadbackAndClone();
+            var value = Mathf.Clamp01(readableOutput[0]);
             smoothedValue = Mathf.Lerp(smoothedValue, value, 1f - Mathf.Exp(-Time.deltaTime / Mathf.Max(smoothing, 0.001f)));
             onBreathMetric.Invoke(smoothedValue);
-            output.Dispose();
         }
 
         private bool TryDequeueSamples(out float[] samples)
@@ -161,7 +155,7 @@ namespace Gateway.AI
             }
 
             var shape = new TensorShape(1, samples.Count);
-            inputTensor = new TensorFloat(shape);
+            inputTensor = new Tensor<float>(shape);
 
             float normalizationFactor = 1f;
             if (normalizeInput)

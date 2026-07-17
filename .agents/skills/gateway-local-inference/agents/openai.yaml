@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gateway Local Inference"
+  short_description: "Integrate offline Sentis and ONNX models"
+  default_prompt: "Use $gateway-local-inference to add or review local model inference."
