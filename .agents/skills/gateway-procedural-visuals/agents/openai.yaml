@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gateway Procedural Visuals"
+  short_description: "Create responsive abstract Unity visuals"
+  default_prompt: "Use $gateway-procedural-visuals to build an abstract responsive visual state."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gateway Unity Feature"
+  short_description: "Build scoped UnityGateway runtime features"
+  default_prompt: "Use $gateway-unity-feature to implement a scoped UnityGateway feature."

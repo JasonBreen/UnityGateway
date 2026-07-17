@@ -1,0 +1,46 @@
+name: .NET
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      # Set this to the folder containing your .sln or .csproj
+      PROJECT_PATH: src/Gateway
+      # Or specify a solution file (comment PROJECT_PATH usages below if you choose SOLUTION_FILE instead)
+      # SOLUTION_FILE: path/to/SolutionName.sln
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/*.sln') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      # If using solution file, change run to: dotnet restore "$SOLUTION_FILE"
+      - name: Restore
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet restore
+
+      - name: Build
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet test --configuration Release --no-build --verbosity normal

@@ -19,6 +19,7 @@ PACKAGE_OVERRIDES = {
     "com.unity.nuget.newtonsoft-json": {
         "ecosystem": "NuGet",
         "name": "Newtonsoft.Json",
+        "version": "13.0.2",
     }
 }
 
@@ -40,9 +41,11 @@ def load_manifest() -> Dict[str, str]:
 def build_payload(package: str, version: str) -> Optional[Dict[str, Any]]:
     override = PACKAGE_OVERRIDES.get(package)
     if override:
-        payload: Dict[str, Any] = {"package": {"name": override["name"], "ecosystem": override["ecosystem"]}}
-        # When we only have a Unity wrapper version, stash it as metadata for reporting.
-        payload["package_version"] = version
+        payload: Dict[str, Any] = {
+            "package": {"name": override["name"], "ecosystem": override["ecosystem"]},
+            "version": override["version"],
+            "unity_package_version": version,
+        }
         return payload
 
     # OSV does not currently expose a dedicated Unity ecosystem. Return None so we can
@@ -52,7 +55,7 @@ def build_payload(package: str, version: str) -> Optional[Dict[str, Any]]:
 
 
 def query_osv(payload: Dict[str, Any]) -> Dict[str, Any]:
-    body = json.dumps({k: v for k, v in payload.items() if k != "package_version"}).encode("utf-8")
+    body = json.dumps({k: v for k, v in payload.items() if k != "unity_package_version"}).encode("utf-8")
     request = urllib.request.Request(OSV_URL, data=body, headers={"Content-Type": "application/json"})
     try:
         with urllib.request.urlopen(request, timeout=15) as response:  # noqa: S310 - urllib used intentionally

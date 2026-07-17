@@ -15,9 +15,10 @@ Running the scanner in this environment produced the following output:
 
 ```text
 Completed OSV scan attempt.
-- com.unity.nuget.newtonsoft-json: unable to query OSV (Network error while querying OSV: Tunnel connection failed: 403 Forbidden)
+- com.unity.nuget.newtonsoft-json: no vulnerabilities reported by OSV
 
 The following packages do not have a supported OSV ecosystem mapping:
+  - com.unity.ai.inference
   - com.unity.modules.ai
   - com.unity.modules.animation
   - com.unity.modules.assetbundle
@@ -47,14 +48,13 @@ The following packages do not have a supported OSV ecosystem mapping:
   - com.unity.modules.vr
   - com.unity.modules.wind
   - com.unity.modules.xr
-  - com.unity.sentis
   - com.unity.timeline
   - com.unity.visualeffectgraph
 
 Detailed results written to Security/osv_scan_results.json
 ```
 
-> **Note:** The outbound OSV query is blocked in the sandbox used for automated evaluation, which triggers the `403 Forbidden` tunnel error above. Running the script on a developer workstation with internet access should return vulnerability data for supported packages (primarily NuGet, npm, PyPI, etc.).
+> **Note:** Unity package `com.unity.nuget.newtonsoft-json` 3.2.1 embeds Newtonsoft.Json 13.0.2. The scanner sends the embedded NuGet version to OSV while retaining the Unity wrapper version as report metadata.
 
 ## Follow-up recommendations
 

@@ -1,15 +1,15 @@
 # AGENTS.md
 
 ## Project Overview
-This repository contains a base Unity 6 project for building a Gateway Visual Experience powered by local AI models. It aims to transform the Gateway tape audio cues into dynamic, responsive visuals. The project uses Unity 6's Inference Engine (formerly Sentis) to run ONNX models locally on the user's CPU/GPU, ensuring offline operation.
+This repository contains a Unity 6.5 project for building a Gateway Visual Experience powered by local AI models. It aims to transform the Gateway tape audio cues into dynamic, responsive visuals. The project is pinned to Unity 6000.5.4f1 and uses Inference Engine 2.4.1 (formerly Sentis) to run ONNX models locally on the user's CPU/GPU, ensuring offline operation.
 
 ## Setup commands
-- Install Unity 6 with the required modules (e.g., standalone build support).
+- Install Unity 6000.5.4f1 with the required modules (e.g., standalone build support).
 - Open the project using Unity Hub or from the command line:
   ```bash
   unity -projectPath .
   ```
-- Ensure dependencies in `Packages/manifest.json` are installed. The project includes the `com.unity.ai.inference` package.
+- Ensure dependencies in `Packages/manifest.json` are installed. The project includes `com.unity.ai.inference` 2.4.1.
 
 ## Build and Run
 - Use Unity's Build Settings to create a standalone build for your target platform (Windows, macOS or Linux).
@@ -25,6 +25,13 @@ This repository contains a base Unity 6 project for building a Gateway Visual E
 ## Testing Instructions
 - Use Unity's Test Framework for automated tests under a `Tests/` folder. Write edit-mode and play-mode tests where appropriate.
 - For visual components, manually test by running the scene and verifying that AI-driven visuals respond to audio cues and input.
+- Run `.agents/skills/gateway-validate/scripts/validate.ps1` for baseline repository, offline-runtime, and .NET checks. Use `-UnityPath <path> -RequireUnity` when Unity Editor compilation is required.
+
+## Project Agents and Skills
+- Project-scoped Codex agents live in `.codex/agents/`: `unity-feature-engineer`, `local-inference-engineer`, `procedural-visual-designer`, and `gateway-reviewer`.
+- Repo-scoped skills live in `.agents/skills/`: `$gateway-unity-feature`, `$gateway-local-inference`, `$gateway-procedural-visuals`, and `$gateway-validate`.
+- Delegate only focused, independent subtasks. Keep final integration, validation, and scope control with the primary agent.
+- Review agents default to read-only inspection unless the user explicitly requests fixes.
 
 ## AI & Inference
 - All AI inference must run locally using the Inference Engine package (`com.unity.ai.inference`). Do not call external cloud services for generative content.
