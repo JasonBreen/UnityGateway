@@ -6,6 +6,8 @@ namespace Gateway.Visuals
 {
     /// <summary>
     /// Defines a single visual presentation that can be triggered by the Gateway state machine.
+    /// Create via Assets → Create → Gateway → Visual State in the Unity editor.
+    /// Stores material parameters and animation curves for a specific focus level or meditation state.
     /// </summary>
     [CreateAssetMenu(
         fileName = "GatewayVisualState",

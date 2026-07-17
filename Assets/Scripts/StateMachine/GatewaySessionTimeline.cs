@@ -7,6 +7,7 @@ namespace Gateway.Visuals
     /// <summary>
     /// Scriptable object that describes the chronological sequence of visual states
     /// for a Gateway audio session. The timeline is consumed by <see cref="GatewayStateMachine"/>.
+    /// Create via Assets → Create → Gateway → Session Timeline in the Unity editor.
     /// </summary>
     [CreateAssetMenu(
         fileName = "GatewaySessionTimeline",

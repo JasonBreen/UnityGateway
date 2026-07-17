@@ -45,10 +45,33 @@ powershell -ExecutionPolicy Bypass -File .agents\skills\gateway-validate\scripts
 
 The baseline performs structural and offline-runtime checks, runs the .NET tests, and uses Unity batch mode when a `Unity` executable is available. Pass `-UnityPath` and `-RequireUnity` when Editor compilation must be mandatory.
 
-## Getting started
+## Quick Start (Auto Setup)
+
+The fastest way to get started is to use the **Gateway Setup Wizard**, which automates the creation of all required starter assets:
+
+1. Open the project with Unity 6.0 (6000.0) or newer (specifically tested with 6000.2.0f1).
+2. In Unity's menu bar, go to **Tools → Gateway → Create Starter Content**.
+3. The wizard will generate:
+   - An example visual state asset (`Assets/GatewayData/States/ExampleFocusState.asset`)
+   - An example session timeline asset (`Assets/GatewayData/Timelines/ExampleSessionTimeline.asset`)
+   - A starter scene (`Assets/Scenes/GatewayDemo.unity`) with wired-up components
+   - A basic material (`Assets/Materials/ExamplePulse.mat`) with a `_PulseSpeed` property
+
+After running the wizard, complete these additional steps:
+
+4. **Create a URP Pipeline Asset**: Go to **Assets → Create → Rendering → URP Asset (with Universal Renderer)**, then assign it in **Edit → Project Settings → Graphics → Scriptable Render Pipeline Settings**.
+5. **Assign an audio clip**: Import a Gateway session audio file and assign it to the `AudioSource` component on the "Gateway System" GameObject in the `GatewayDemo` scene.
+6. **Update the material shader**: Select `ExamplePulse.mat` and change it to a URP-compatible shader or Shader Graph. Ensure the shader exposes a `_PulseSpeed` float property (or update the visual state to match your shader's properties).
+7. **(Optional) Add a Sentis model**: Import an ONNX model, create a `ModelAsset`, add the `BreathingModelController` component to the scene, and assign the model asset.
+
+For a detailed checklist of all required components, see [`Docs/PROJECT_READINESS_CHECKLIST.md`](Docs/PROJECT_READINESS_CHECKLIST.md).
+
+## Getting started (Manual Setup)
+
+If you prefer to set up the project manually instead of using the wizard:
 
 1. Install and open the project with Unity 6000.5.4f1. Unity Hub reads the exact version from `ProjectSettings/ProjectVersion.txt`.
-2. Import the Universal Render Pipeline (URP) and create a URP pipeline asset if you intend to use the visual setup described in the project plan.
+2. Import the Universal Render Pipeline (URP) and create a URP pipeline asset if you intend to use the visual setup described in the project plan. The URP package (`com.unity.render-pipelines.universal` 17.5.0) is already included in `Packages/manifest.json`.
 3. Create Scriptable Objects via the **Assets → Create → Gateway** menu:
    - **Visual State** assets define material parameters and animation curves for each focus level.
    - **Session Timeline** assets assemble the ordered list of focus levels that the session will play through.

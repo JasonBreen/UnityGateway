@@ -6,13 +6,16 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     env:
       # Set this to the folder containing your .sln or .csproj
-      PROJECT_PATH: src/Gateway
+      PROJECT_PATH: .
       # Or specify a solution file (comment PROJECT_PATH usages below if you choose SOLUTION_FILE instead)
       # SOLUTION_FILE: path/to/SolutionName.sln
 
