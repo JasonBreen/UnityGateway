@@ -11,10 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # Set this to the folder containing your .sln or .csproj
-      PROJECT_PATH: src/Gateway
       # Or specify a solution file (comment PROJECT_PATH usages below if you choose SOLUTION_FILE instead)
-      # SOLUTION_FILE: path/to/SolutionName.sln
+      SOLUTION_FILE: Gateway.sln
 
     steps:
       - uses: actions/checkout@v4
@@ -32,15 +30,11 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
 
-      # If using solution file, change run to: dotnet restore "$SOLUTION_FILE"
       - name: Restore
-        working-directory: ${{ env.PROJECT_PATH }}
-        run: dotnet restore
+        run: dotnet restore "$SOLUTION_FILE"
 
       - name: Build
-        working-directory: ${{ env.PROJECT_PATH }}
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build "$SOLUTION_FILE" --configuration Release --no-restore
 
       - name: Test
-        working-directory: ${{ env.PROJECT_PATH }}
-        run: dotnet test --configuration Release --no-build --verbosity normal
+        run: dotnet test "$SOLUTION_FILE" --configuration Release --no-build --verbosity normal
