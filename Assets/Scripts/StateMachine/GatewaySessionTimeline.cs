@@ -31,16 +31,11 @@ namespace Gateway.Visuals
         private float durationSeconds = 60f;
 
         [SerializeField]
-        [Tooltip("Optional audio cue timestamp (in seconds) to align with the segment start.")]
-        private float cueTimestampSeconds = 0f;
-
-        [SerializeField]
         [Tooltip("Whether the segment should wait for an external trigger (e.g., a cue detector) before continuing.")]
         private bool waitForCue = false;
 
         public GatewayVisualState VisualState => visualState;
         public float DurationSeconds => durationSeconds;
-        public float CueTimestampSeconds => cueTimestampSeconds;
         public bool WaitForCue => waitForCue;
     }
 }
