@@ -21,6 +21,15 @@ namespace Gateway.Core.Tests
             Assert.Throws<FormatException>(() => UnityProjectMetadata.ExtractEditorVersion(contents));
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public void ExtractEditorVersion_ThrowsWhenNullOrWhitespace(string contents)
+        {
+            Assert.Throws<ArgumentException>(() => UnityProjectMetadata.ExtractEditorVersion(contents));
+        }
+
         [Fact]
         public void LooksLikeUnityProject_FalseForEmptyPath()
         {
