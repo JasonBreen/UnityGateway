@@ -25,6 +25,7 @@ namespace Gateway.Visuals
             {
                 if (!string.IsNullOrEmpty(binding.ParameterKey))
                 {
+                    binding.CachedPropertyId = Shader.PropertyToID(binding.PropertyName);
                     bindingLookup[binding.ParameterKey] = binding;
                 }
             }
@@ -75,7 +76,7 @@ namespace Gateway.Visuals
                         continue;
                     }
 
-                    material.SetFloat(binding.PropertyName, value);
+                    material.SetFloat(binding.CachedPropertyId, value);
                 }
             }
         }
@@ -97,5 +98,6 @@ namespace Gateway.Visuals
 
         public string ParameterKey => parameterKey;
         public string PropertyName => propertyName;
+        public int CachedPropertyId { get; set; }
     }
 }
