@@ -24,8 +24,9 @@ namespace Gateway.Visuals
         private AudioSource audioSourceOverride = null;
 
         private Coroutine activeRoutine;
+        private AudioSource cachedAudioSource;
 
-        private AudioSource AudioSource => audioSourceOverride != null ? audioSourceOverride : GetComponent<AudioSource>();
+        private AudioSource AudioSource => audioSourceOverride != null ? audioSourceOverride : (cachedAudioSource != null ? cachedAudioSource : (cachedAudioSource = GetComponent<AudioSource>()));
 
         private void OnEnable()
         {
