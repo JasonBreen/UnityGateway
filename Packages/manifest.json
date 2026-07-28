@@ -3,6 +3,7 @@
     "com.unity.ai.inference": "2.4.1",
     "com.unity.timeline": "1.8.10",
     "com.unity.visualeffectgraph": "17.5.0",
+    "com.unity.render-pipelines.universal": "17.5.0",
     "com.unity.nuget.newtonsoft-json": "3.2.1",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
