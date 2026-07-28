@@ -5,6 +5,8 @@ namespace Gateway.Visuals
 {
     /// <summary>
     /// Applies <see cref="GatewayVisualState"/> data to Unity materials and exposes hooks for AI modulation.
+    /// Manages a list of target materials and updates their shader properties based on the active visual state.
+    /// Can be driven by the state machine's timeline or by external AI systems via the Tick() method.
     /// </summary>
     public sealed class GatewayVisualController : MonoBehaviour
     {

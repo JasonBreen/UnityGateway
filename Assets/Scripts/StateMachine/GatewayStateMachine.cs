@@ -5,6 +5,8 @@ namespace Gateway.Visuals
 {
     /// <summary>
     /// Coordinates the active <see cref="GatewayVisualState"/> based on a session timeline and audio cues.
+    /// Attach to a GameObject with an AudioSource component. The state machine will automatically start
+    /// the timeline on Enable if autoStart is true, playing the audio and sequencing through visual states.
     /// </summary>
     [RequireComponent(typeof(AudioSource))]
     public sealed class GatewayStateMachine : MonoBehaviour
