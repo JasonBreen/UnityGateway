@@ -41,8 +41,24 @@ namespace Gateway.Visuals
         [Tooltip("Target value applied when the state is activated.")]
         private float value = 0f;
 
+        private int propertyId = 0;
+        private bool propertyIdInitialized = false;
+
         public string PropertyName => propertyName;
         public float Value => value;
+
+        public int PropertyID
+        {
+            get
+            {
+                if (!propertyIdInitialized)
+                {
+                    propertyId = Shader.PropertyToID(propertyName);
+                    propertyIdInitialized = true;
+                }
+                return propertyId;
+            }
+        }
     }
 
     [Serializable]
