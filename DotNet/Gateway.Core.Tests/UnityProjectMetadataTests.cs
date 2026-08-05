@@ -6,6 +6,15 @@ namespace Gateway.Core.Tests
 {
     public sealed class UnityProjectMetadataTests
     {
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public void ExtractEditorVersion_ThrowsWhenEmpty(string? contents)
+        {
+            Assert.Throws<ArgumentException>(() => UnityProjectMetadata.ExtractEditorVersion(contents!));
+        }
+
         [Fact]
         public void ExtractEditorVersion_ReadsFirstMatchingLine()
         {
