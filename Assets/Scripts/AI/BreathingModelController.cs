@@ -37,12 +37,29 @@ namespace Gateway.AI
         [Tooltip("Normalize the input window by its peak amplitude before inference.")]
         private bool normalizeInput = true;
 
+        [SerializeField]
+        [Tooltip("Use the Microphone API to acquire audio samples instead of the attached AudioSource.")]
+        private bool useMicrophone = false;
+
+        [SerializeField]
+        [Tooltip("The name of the microphone device to use. Leave empty for the default device.")]
+        private string microphoneDeviceName = null;
+
+        [SerializeField]
+        [Tooltip("Optional prerecorded AudioClip to use instead of the microphone when testing.")]
+        private AudioClip prerecordedClip = null;
+
         private Model runtimeModel = null;
         private Worker worker = null;
         private Tensor<float> inputTensor = null;
         private float[] reusableWindow = null;
         private float smoothedValue;
         private readonly Queue<float> sampleBuffer = new Queue<float>();
+
+        private AudioClip activeClip = null;
+        private int lastSamplePosition = 0;
+        private double simulatedAudioTime = 0.0;
+        private float[] clipBuffer = null;
 
         public UnityEngine.Events.UnityEvent<float> OnBreathMetric => onBreathMetric;
 
@@ -77,10 +94,29 @@ namespace Gateway.AI
             {
                 worker = new Worker(runtimeModel, BackendType.CPU);
             }
+
+            if (useMicrophone)
+            {
+                var device = string.IsNullOrEmpty(microphoneDeviceName) ? null : microphoneDeviceName;
+                activeClip = Microphone.Start(device, true, 1, 44100);
+                lastSamplePosition = 0;
+            }
+            else if (prerecordedClip != null)
+            {
+                activeClip = prerecordedClip;
+                lastSamplePosition = 0;
+                simulatedAudioTime = 0.0;
+            }
         }
 
         private void OnDestroy()
         {
+            if (useMicrophone)
+            {
+                var device = string.IsNullOrEmpty(microphoneDeviceName) ? null : microphoneDeviceName;
+                Microphone.End(device);
+            }
+
             if (worker != null)
             {
                 worker.Dispose();
@@ -96,6 +132,79 @@ namespace Gateway.AI
             }
         }
 
+        private void AcquireAudioSamples()
+        {
+            if (activeClip == null)
+            {
+                return;
+            }
+
+            int currentPosition = 0;
+            if (useMicrophone)
+            {
+                var device = string.IsNullOrEmpty(microphoneDeviceName) ? null : microphoneDeviceName;
+                currentPosition = Microphone.GetPosition(device);
+            }
+            else if (prerecordedClip != null)
+            {
+                simulatedAudioTime += Time.deltaTime;
+                currentPosition = Mathf.FloorToInt((float)simulatedAudioTime * activeClip.frequency) % activeClip.samples;
+            }
+
+            if (currentPosition == lastSamplePosition)
+            {
+                return;
+            }
+
+            int totalSamples = activeClip.samples * activeClip.channels;
+            if (clipBuffer == null || clipBuffer.Length != totalSamples)
+            {
+                clipBuffer = new float[totalSamples];
+                if (!useMicrophone)
+                {
+                    activeClip.GetData(clipBuffer, 0);
+                }
+            }
+
+            if (useMicrophone)
+            {
+                activeClip.GetData(clipBuffer, 0);
+            }
+
+            int numChannels = activeClip.channels;
+
+            if (currentPosition < lastSamplePosition)
+            {
+                ProcessClipBuffer(lastSamplePosition, activeClip.samples, numChannels);
+                ProcessClipBuffer(0, currentPosition, numChannels);
+            }
+            else
+            {
+                ProcessClipBuffer(lastSamplePosition, currentPosition, numChannels);
+            }
+
+            lastSamplePosition = currentPosition;
+        }
+
+        private void ProcessClipBuffer(int startSample, int endSample, int channels)
+        {
+            for (int i = startSample; i < endSample; i++)
+            {
+                float sum = 0f;
+                for (int c = 0; c < channels; c++)
+                {
+                    sum += clipBuffer[i * channels + c];
+                }
+                var monoSample = sum / channels;
+                sampleBuffer.Enqueue(monoSample);
+
+                if (sampleBuffer.Count > sampleWindow * 4)
+                {
+                    sampleBuffer.Dequeue();
+                }
+            }
+        }
+
         private void Update()
         {
             if (worker == null)
@@ -103,8 +212,8 @@ namespace Gateway.AI
                 return;
             }
 
-            // Placeholder: Acquire microphone samples.
-            // In editor, you can inject prerecorded data or feed from Microphone API.
+            AcquireAudioSamples();
+
             if (!TryDequeueSamples(out var samples))
             {
                 return;
