@@ -22,6 +22,14 @@ namespace Gateway.Core.Tests
         }
 
         [Fact]
+        public void ExtractEditorVersion_ThrowsWhenValueIsEmpty()
+        {
+            const string contents = "m_EditorVersion:  ";
+            var exception = Assert.Throws<FormatException>(() => UnityProjectMetadata.ExtractEditorVersion(contents));
+            Assert.Equal("m_EditorVersion value is missing", exception.Message);
+        }
+
+        [Fact]
         public void LooksLikeUnityProject_FalseForEmptyPath()
         {
             Assert.False(UnityProjectMetadata.LooksLikeUnityProject(string.Empty));
