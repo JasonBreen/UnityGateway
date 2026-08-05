@@ -30,12 +30,7 @@ namespace Gateway.Visuals
         [Tooltip("Duration of this focus level segment in seconds.")]
         private float durationSeconds = 60f;
 
-        [SerializeField]
-        [Tooltip("Optional audio cue timestamp (in seconds) to align with the segment start.")]
-        private float cueTimestampSeconds = 0f;
-
         public GatewayVisualState VisualState => visualState;
         public float DurationSeconds => durationSeconds;
-        public float CueTimestampSeconds => cueTimestampSeconds;
     }
 }
