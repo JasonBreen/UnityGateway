@@ -45,7 +45,28 @@ powershell -ExecutionPolicy Bypass -File .agents\skills\gateway-validate\scripts
 
 The baseline performs structural and offline-runtime checks, runs the .NET tests, and uses Unity batch mode when a `Unity` executable is available. Pass `-UnityPath` and `-RequireUnity` when Editor compilation must be mandatory.
 
-## Getting started
+## Quick Start (Auto Setup)
+
+The fastest way to get started is to use the automated setup wizard:
+
+1. Open the project with Unity 6.0 (6000.2.0f1 or newer).
+2. Once scripts compile, select **Tools → Gateway → Create Starter Content** from the menu.
+3. The wizard will create:
+   - `Assets/GatewayData/States/ExampleFocusState.asset` – A sample visual state with material parameters
+   - `Assets/GatewayData/Timelines/ExampleSessionTimeline.asset` – A timeline with one segment
+   - `Assets/Scenes/GatewayDemo.unity` – A demo scene with configured components
+   - `Assets/Materials/ExamplePulse.mat` – A basic material for testing
+4. Create a URP Pipeline Asset:
+   - Right-click in Project window → **Create → Rendering → URP Asset (with Universal Renderer)**
+   - Assign it in **Edit → Project Settings → Graphics → Scriptable Render Pipeline Settings**
+5. Assign an audio clip to the `AudioSource` component in the `GatewayDemo` scene.
+6. Press Play to see the basic visual state system in action.
+
+For a detailed checklist of all components and next steps, see `Docs/PROJECT_READINESS_CHECKLIST.md`.
+
+## Getting started (Manual Setup)
+
+If you prefer manual setup or need to create additional assets:
 
 1. Install and open the project with Unity 6000.5.4f1. Unity Hub reads the exact version from `ProjectSettings/ProjectVersion.txt`.
 2. Import the Universal Render Pipeline (URP) and create a URP pipeline asset if you intend to use the visual setup described in the project plan.
@@ -58,7 +79,9 @@ The baseline performs structural and offline-runtime checks, runs the .NET tests
 
 ## Local AI workflow
 
-- Convert trained breathing or relaxation detection models to ONNX and place them in a Resources folder so they can be referenced by the Sentis `ModelAsset` field.
+
+**Note**: This project uses `com.unity.ai.inference` (version 2.4.1) as the supported AI inference package.
+- Convert trained breathing or relaxation detection models to ONNX and place them in a Resources folder so they can be referenced by the Inference Engine `ModelAsset` field.
 - Use the `BreathingModelController.OnBreathMetric` UnityEvent to wire the AI model’s output to `GatewayVisualController.Tick` or to other scripts that react to the breathing intensity.
 - Keep all inference on-device—do not integrate Unity’s cloud-based Assistant or Generator tools.
 
