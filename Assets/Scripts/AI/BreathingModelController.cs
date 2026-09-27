@@ -37,12 +37,22 @@ namespace Gateway.AI
         [Tooltip("Normalize the input window by its peak amplitude before inference.")]
         private bool normalizeInput = true;
 
+        [SerializeField]
+        [Tooltip("Use the microphone for real-time inference input.")]
+        private bool useMicrophone = false;
+
+        [SerializeField]
+        [Tooltip("Name of the microphone device to use. Leave empty for the default device.")]
+        private string microphoneDeviceName = null;
+
         private Model runtimeModel = null;
         private Worker worker = null;
         private Tensor<float> inputTensor = null;
         private float[] reusableWindow = null;
         private float smoothedValue;
         private readonly Queue<float> sampleBuffer = new Queue<float>();
+        private AudioClip microphoneClip = null;
+        private int lastMicrophonePosition = 0;
 
         public UnityEngine.Events.UnityEvent<float> OnBreathMetric => onBreathMetric;
 
@@ -56,6 +66,13 @@ namespace Gateway.AI
 
         private void Start()
         {
+            if (useMicrophone)
+            {
+                string deviceToUse = string.IsNullOrEmpty(microphoneDeviceName) ? null : microphoneDeviceName;
+                microphoneClip = Microphone.Start(deviceToUse, true, 1, 44100);
+                lastMicrophonePosition = 0;
+            }
+
             if (modelAsset == null)
             {
                 Debug.LogWarning("BreathingModelController requires a Sentis model asset.");
@@ -81,6 +98,21 @@ namespace Gateway.AI
 
         private void OnDestroy()
         {
+            if (useMicrophone)
+            {
+                string deviceToUse = string.IsNullOrEmpty(microphoneDeviceName) ? null : microphoneDeviceName;
+                if (Microphone.IsRecording(deviceToUse))
+                {
+                    Microphone.End(deviceToUse);
+                }
+
+                if (microphoneClip != null)
+                {
+                    Destroy(microphoneClip);
+                    microphoneClip = null;
+                }
+            }
+
             if (worker != null)
             {
                 worker.Dispose();
@@ -98,13 +130,42 @@ namespace Gateway.AI
 
         private void Update()
         {
+            if (useMicrophone && microphoneClip != null)
+            {
+                string deviceToUse = string.IsNullOrEmpty(microphoneDeviceName) ? null : microphoneDeviceName;
+                int currentPosition = Microphone.GetPosition(deviceToUse);
+
+                if (currentPosition != lastMicrophonePosition && currentPosition >= 0)
+                {
+                    if (currentPosition < lastMicrophonePosition)
+                    {
+                        // Buffer wrapped around
+                        int samplesToEnd = microphoneClip.samples - lastMicrophonePosition;
+                        float[] dataEnd = new float[samplesToEnd];
+                        microphoneClip.GetData(dataEnd, lastMicrophonePosition);
+                        EnqueueSamples(dataEnd);
+
+                        float[] dataStart = new float[currentPosition];
+                        microphoneClip.GetData(dataStart, 0);
+                        EnqueueSamples(dataStart);
+                    }
+                    else
+                    {
+                        // No wrap around
+                        int samplesToRead = currentPosition - lastMicrophonePosition;
+                        float[] data = new float[samplesToRead];
+                        microphoneClip.GetData(data, lastMicrophonePosition);
+                        EnqueueSamples(data);
+                    }
+                    lastMicrophonePosition = currentPosition;
+                }
+            }
+
             if (worker == null)
             {
                 return;
             }
 
-            // Placeholder: Acquire microphone samples.
-            // In editor, you can inject prerecorded data or feed from Microphone API.
             if (!TryDequeueSamples(out var samples))
             {
                 return;
