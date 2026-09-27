@@ -16,6 +16,7 @@ namespace Gateway.Visuals
         private List<AnimationBinding> animationBindings = new List<AnimationBinding>();
 
         private readonly Dictionary<string, AnimationBinding> bindingLookup = new Dictionary<string, AnimationBinding>();
+        private readonly Dictionary<string, int> propertyIdCache = new Dictionary<string, int>();
         private GatewayVisualState activeState;
 
         private void Awake()
@@ -25,6 +26,7 @@ namespace Gateway.Visuals
             {
                 if (!string.IsNullOrEmpty(binding.ParameterKey))
                 {
+                    binding.PropertyId = Shader.PropertyToID(binding.PropertyName);
                     bindingLookup[binding.ParameterKey] = binding;
                 }
             }
@@ -43,7 +45,12 @@ namespace Gateway.Visuals
 
                 foreach (var parameter in state.MaterialParameters)
                 {
-                    material.SetFloat(parameter.PropertyName, parameter.Value);
+                    if (!propertyIdCache.TryGetValue(parameter.PropertyName, out int propertyId))
+                    {
+                        propertyId = Shader.PropertyToID(parameter.PropertyName);
+                        propertyIdCache[parameter.PropertyName] = propertyId;
+                    }
+                    material.SetFloat(propertyId, parameter.Value);
                 }
             }
         }
@@ -75,7 +82,7 @@ namespace Gateway.Visuals
                         continue;
                     }
 
-                    material.SetFloat(binding.PropertyName, value);
+                    material.SetFloat(binding.PropertyId, value);
                 }
             }
         }
@@ -97,5 +104,6 @@ namespace Gateway.Visuals
 
         public string ParameterKey => parameterKey;
         public string PropertyName => propertyName;
+        public int PropertyId { get; set; }
     }
 }
