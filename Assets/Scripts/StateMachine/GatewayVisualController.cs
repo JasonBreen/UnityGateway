@@ -43,7 +43,7 @@ namespace Gateway.Visuals
 
                 foreach (var parameter in state.MaterialParameters)
                 {
-                    material.SetFloat(parameter.PropertyName, parameter.Value);
+                    material.SetFloat(Shader.PropertyToID(parameter.PropertyName), parameter.Value);
                 }
             }
         }
@@ -75,7 +75,7 @@ namespace Gateway.Visuals
                         continue;
                     }
 
-                    material.SetFloat(binding.PropertyName, value);
+                    material.SetFloat(binding.PropertyId, value);
                 }
             }
         }
@@ -95,7 +95,23 @@ namespace Gateway.Visuals
         [SerializeField]
         private string propertyName = string.Empty;
 
+        private int propertyId;
+        private bool isPropertyIdInitialized;
+
         public string ParameterKey => parameterKey;
         public string PropertyName => propertyName;
+
+        public int PropertyId
+        {
+            get
+            {
+                if (!isPropertyIdInitialized)
+                {
+                    propertyId = Shader.PropertyToID(propertyName);
+                    isPropertyIdInitialized = true;
+                }
+                return propertyId;
+            }
+        }
     }
 }
