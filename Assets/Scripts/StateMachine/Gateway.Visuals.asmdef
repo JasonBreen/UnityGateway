@@ -1,0 +1,17 @@
+{
+    "name": "Gateway.Visuals",
+    "rootNamespace": "",
+    "references": [
+        "Unity.InferenceEngine",
+        "Unity.Timeline"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
