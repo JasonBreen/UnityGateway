@@ -60,6 +60,12 @@ def query_osv(payload: Dict[str, Any]) -> Dict[str, Any]:
     try:
         with urllib.request.urlopen(request, timeout=15) as response:  # noqa: S310 - urllib used intentionally
             data = json.load(response)
+    except json.JSONDecodeError as exc:
+        return {
+            "status": "error",
+            "error": f"Invalid JSON response from OSV API: {exc}",
+            "payload": payload,
+        }
     except urllib.error.HTTPError as exc:  # pragma: no cover - exercised in CI only when API accessible
         return {
             "status": "error",
