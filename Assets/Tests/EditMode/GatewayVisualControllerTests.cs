@@ -150,5 +150,126 @@ namespace Gateway.Visuals.Tests
             // Cleanup
             Object.DestroyImmediate(state);
         }
+
+        // Additional Tick() tests from PR #19
+        [Test]
+        public void Tick_NoActiveState_DoesNothing()
+        {
+            var targetMaterialsField = typeof(GatewayVisualController).GetField("targetMaterials", BindingFlags.NonPublic | BindingFlags.Instance);
+            targetMaterialsField.SetValue(controller, new List<Material> { material1 });
+
+            material1.SetFloat("_Glossiness", 0.1f);
+            controller.Tick(0.5f);
+
+            Assert.AreEqual(0.1f, material1.GetFloat("_Glossiness"));
+        }
+
+        [Test]
+        public void Tick_WithActiveState_UpdatesMaterialParameters()
+        {
+            var targetMaterialsField = typeof(GatewayVisualController).GetField("targetMaterials", BindingFlags.NonPublic | BindingFlags.Instance);
+            targetMaterialsField.SetValue(controller, new List<Material> { material1 });
+
+            var state = ScriptableObject.CreateInstance<GatewayVisualState>();
+
+            object animParamObj = new AnimationParameter();
+            var animParamType = typeof(AnimationParameter);
+            animParamType.GetField("key", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(animParamObj, "Pulse");
+            animParamType.GetField("curve", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(animParamObj, AnimationCurve.Linear(0f, 0f, 1f, 1f));
+            var animParam = (AnimationParameter)animParamObj;
+            var animParamsField = typeof(GatewayVisualState).GetField("animationParameters", BindingFlags.NonPublic | BindingFlags.Instance);
+            animParamsField.SetValue(state, new List<AnimationParameter> { animParam });
+
+            object bindingObj = new AnimationBinding();
+            var bindingType = typeof(AnimationBinding);
+            bindingType.GetField("parameterKey", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(bindingObj, "Pulse");
+            bindingType.GetField("propertyName", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(bindingObj, "_Glossiness");
+            var binding = (AnimationBinding)bindingObj;
+            var bindingsField = typeof(GatewayVisualController).GetField("animationBindings", BindingFlags.NonPublic | BindingFlags.Instance);
+            bindingsField.SetValue(controller, new List<AnimationBinding> { binding });
+
+            var awakeMethod = typeof(GatewayVisualController).GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Instance);
+            awakeMethod.Invoke(controller, null);
+
+            material1.SetFloat("_Glossiness", 0.1f);
+            controller.ApplyState(state);
+            controller.Tick(0.5f);
+
+            Assert.AreEqual(0.5f, material1.GetFloat("_Glossiness"));
+
+            Object.DestroyImmediate(state);
+        }
+
+        [Test]
+        public void Tick_ClampsNormalizedProgress()
+        {
+            var targetMaterialsField = typeof(GatewayVisualController).GetField("targetMaterials", BindingFlags.NonPublic | BindingFlags.Instance);
+            targetMaterialsField.SetValue(controller, new List<Material> { material1 });
+
+            var state = ScriptableObject.CreateInstance<GatewayVisualState>();
+            object animParamObj = new AnimationParameter();
+            var animParamType = typeof(AnimationParameter);
+            animParamType.GetField("key", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(animParamObj, "Pulse");
+            animParamType.GetField("curve", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(animParamObj, AnimationCurve.Linear(0f, 0f, 1f, 1f));
+            var animParam = (AnimationParameter)animParamObj;
+            var animParamsField = typeof(GatewayVisualState).GetField("animationParameters", BindingFlags.NonPublic | BindingFlags.Instance);
+            animParamsField.SetValue(state, new List<AnimationParameter> { animParam });
+
+            object bindingObj = new AnimationBinding();
+            var bindingType = typeof(AnimationBinding);
+            bindingType.GetField("parameterKey", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(bindingObj, "Pulse");
+            bindingType.GetField("propertyName", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(bindingObj, "_Glossiness");
+            var binding = (AnimationBinding)bindingObj;
+            var bindingsField = typeof(GatewayVisualController).GetField("animationBindings", BindingFlags.NonPublic | BindingFlags.Instance);
+            bindingsField.SetValue(controller, new List<AnimationBinding> { binding });
+
+            var awakeMethod = typeof(GatewayVisualController).GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Instance);
+            awakeMethod.Invoke(controller, null);
+
+            material1.SetFloat("_Glossiness", 0.1f);
+            controller.ApplyState(state);
+
+            controller.Tick(1.5f);
+            Assert.AreEqual(1.0f, material1.GetFloat("_Glossiness"));
+
+            controller.Tick(-0.5f);
+            Assert.AreEqual(0.0f, material1.GetFloat("_Glossiness"));
+
+            Object.DestroyImmediate(state);
+        }
+
+        [Test]
+        public void Tick_WithNullMaterial_DoesNotThrow()
+        {
+            var targetMaterialsField = typeof(GatewayVisualController).GetField("targetMaterials", BindingFlags.NonPublic | BindingFlags.Instance);
+            targetMaterialsField.SetValue(controller, new List<Material> { material1, null });
+
+            var state = ScriptableObject.CreateInstance<GatewayVisualState>();
+            object animParamObj = new AnimationParameter();
+            var animParamType = typeof(AnimationParameter);
+            animParamType.GetField("key", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(animParamObj, "Pulse");
+            animParamType.GetField("curve", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(animParamObj, AnimationCurve.Linear(0f, 0f, 1f, 1f));
+            var animParam = (AnimationParameter)animParamObj;
+            var animParamsField = typeof(GatewayVisualState).GetField("animationParameters", BindingFlags.NonPublic | BindingFlags.Instance);
+            animParamsField.SetValue(state, new List<AnimationParameter> { animParam });
+
+            object bindingObj = new AnimationBinding();
+            var bindingType = typeof(AnimationBinding);
+            bindingType.GetField("parameterKey", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(bindingObj, "Pulse");
+            bindingType.GetField("propertyName", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(bindingObj, "_Glossiness");
+            var binding = (AnimationBinding)bindingObj;
+            var bindingsField = typeof(GatewayVisualController).GetField("animationBindings", BindingFlags.NonPublic | BindingFlags.Instance);
+            bindingsField.SetValue(controller, new List<AnimationBinding> { binding });
+
+            var awakeMethod = typeof(GatewayVisualController).GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Instance);
+            awakeMethod.Invoke(controller, null);
+
+            Assert.DoesNotThrow(() => {
+                controller.ApplyState(state);
+                controller.Tick(0.5f);
+            });
+
+            Object.DestroyImmediate(state);
+        }
     }
 }
