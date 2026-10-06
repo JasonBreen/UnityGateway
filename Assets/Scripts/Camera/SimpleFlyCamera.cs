@@ -6,6 +6,32 @@ namespace Gateway.Visuals
     /// Lightweight fly-style camera rig for quickly exploring abstract spaces.
     /// Uses WASD/arrow keys for planar movement and right-mouse drag for orientation.
     /// </summary>
+    public interface IInputProvider
+    {
+        bool GetMouseButton(int button);
+        float GetAxis(string axisName);
+        float GetAxisRaw(string axisName);
+        bool GetKey(KeyCode key);
+    }
+
+    public interface ITimeProvider
+    {
+        float DeltaTime { get; }
+    }
+
+    public class DefaultInputProvider : IInputProvider
+    {
+        public bool GetMouseButton(int button) => Input.GetMouseButton(button);
+        public float GetAxis(string axisName) => Input.GetAxis(axisName);
+        public float GetAxisRaw(string axisName) => Input.GetAxisRaw(axisName);
+        public bool GetKey(KeyCode key) => Input.GetKey(key);
+    }
+
+    public class DefaultTimeProvider : ITimeProvider
+    {
+        public float DeltaTime => Time.deltaTime;
+    }
+
     [RequireComponent(typeof(Camera))]
     [DisallowMultipleComponent]
     public sealed class SimpleFlyCamera : MonoBehaviour
@@ -25,6 +51,9 @@ namespace Gateway.Visuals
         private float yaw;
         private float pitch;
 
+        public IInputProvider InputProvider { get; set; } = new DefaultInputProvider();
+        public ITimeProvider TimeProvider { get; set; } = new DefaultTimeProvider();
+
         private void Awake()
         {
             var rotation = transform.rotation.eulerAngles;
@@ -40,13 +69,13 @@ namespace Gateway.Visuals
 
         private void UpdateRotation()
         {
-            if (!Input.GetMouseButton(1))
+            if (!InputProvider.GetMouseButton(1))
             {
                 return;
             }
 
-            yaw += Input.GetAxis("Mouse X") * lookSensitivity * Time.deltaTime;
-            pitch -= Input.GetAxis("Mouse Y") * lookSensitivity * Time.deltaTime;
+            yaw += InputProvider.GetAxis("Mouse X") * lookSensitivity * TimeProvider.DeltaTime;
+            pitch -= InputProvider.GetAxis("Mouse Y") * lookSensitivity * TimeProvider.DeltaTime;
             pitch = Mathf.Clamp(pitch, -80f, 80f);
 
             transform.rotation = Quaternion.Euler(pitch, yaw, 0f);
@@ -54,20 +83,20 @@ namespace Gateway.Visuals
 
         private void UpdateTranslation()
         {
-            var input = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
-            if (Input.GetKey(KeyCode.E))
+            var input = new Vector3(InputProvider.GetAxisRaw("Horizontal"), 0f, InputProvider.GetAxisRaw("Vertical"));
+            if (InputProvider.GetKey(KeyCode.E))
             {
                 input.y += 1f;
             }
 
-            if (Input.GetKey(KeyCode.Q))
+            if (InputProvider.GetKey(KeyCode.Q))
             {
                 input.y -= 1f;
             }
 
             var direction = transform.TransformDirection(input.normalized);
-            transform.position += direction * moveSpeed * Time.deltaTime;
-            transform.position += Vector3.up * input.y * verticalSpeed * Time.deltaTime;
+            transform.position += direction * moveSpeed * TimeProvider.DeltaTime;
+            transform.position += Vector3.up * input.y * verticalSpeed * TimeProvider.DeltaTime;
         }
     }
 }

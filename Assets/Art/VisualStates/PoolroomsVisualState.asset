@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e672377f8df24b69aa30cf2a837acca1, type: 3}
   m_Name: PoolroomsVisualState
   m_EditorClassIdentifier: 
-  displayName: Abstract Pulse
   materialParameters:
   - propertyName: _Smoothness
     value: 0.85

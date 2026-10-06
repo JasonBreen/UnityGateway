@@ -14,10 +14,6 @@ namespace Gateway.Visuals
     public sealed class GatewayVisualState : ScriptableObject
     {
         [SerializeField]
-        [Tooltip("Human readable name for the focus level or cue this state represents.")]
-        private string displayName = "Focus State";
-
-        [SerializeField]
         [Tooltip("Material parameters that will be applied when this state activates.")]
         private List<MaterialParameter> materialParameters = new List<MaterialParameter>();
 
@@ -25,7 +21,6 @@ namespace Gateway.Visuals
         [Tooltip("Optional animation curves that can be driven over time or by AI signals.")]
         private List<AnimationParameter> animationParameters = new List<AnimationParameter>();
 
-        public string DisplayName => displayName;
         public IReadOnlyList<MaterialParameter> MaterialParameters => materialParameters;
         public IReadOnlyList<AnimationParameter> AnimationParameters => animationParameters;
     }
@@ -41,8 +36,24 @@ namespace Gateway.Visuals
         [Tooltip("Target value applied when the state is activated.")]
         private float value = 0f;
 
+        private int propertyId = 0;
+        private bool propertyIdInitialized = false;
+
         public string PropertyName => propertyName;
         public float Value => value;
+
+        public int PropertyID
+        {
+            get
+            {
+                if (!propertyIdInitialized)
+                {
+                    propertyId = Shader.PropertyToID(propertyName);
+                    propertyIdInitialized = true;
+                }
+                return propertyId;
+            }
+        }
     }
 
     [Serializable]
